@@ -40,6 +40,7 @@ class ModelManager:
                 raise ValueError(f"Invalid model name: {model_name}")
 
             model_path = Config.get_model_path(model_name)
+            logger.info(f"Whisper's model path {model_path}")
             if model_path.exists():
                 logger.info(f"Model {model_name} already downloaded")
                 return True
@@ -49,7 +50,10 @@ class ModelManager:
             whisper.load_model(model_name)
             
             # Move the model from whisper's cache to our app directory
-            cache_dir = Path(torch.hub.get_dir()) / "whisper"
+            # cache_dir = Path(torch.hub.get_dir()) / "whisper"
+            cache_dir = Path(os.path.join(os.path.expanduser("~"), ".cache")) / "whisper"
+            logger.info(f"Whisper's model cache dir {cache_dir}")
+
             src_path = next(cache_dir.glob(f"*{model_name}*.pt"))
             shutil.copy2(src_path, model_path)
             
@@ -58,7 +62,7 @@ class ModelManager:
             return True
 
         except Exception as e:
-            logger.error(f"Error downloading model {model_name}: {e}")
+            logger.exception(f"Error downloading model {model_name}: {e}")
             return False
 
     def get_model_size(self, model_name: str) -> int:
