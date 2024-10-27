@@ -1,10 +1,24 @@
 from setuptools import setup, find_packages
+import os
+from pathlib import Path
+
+def get_model_files():
+    """Get all model files to include in the package."""
+    model_dir = Path("src/whisper_transcriber/resources/models")
+    if model_dir.exists():
+        return [
+            (str(model_dir.relative_to("src/whisper_transcriber")), 
+             [str(f) for f in model_dir.glob("*") if f.is_file()])
+        ]
+    return []
 
 setup(
     name="open_video_transcriber",
     version="0.1.0",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    include_package_data=True,
+    data_files=get_model_files(),
     install_requires=[
         "openai-whisper>=0.5.0",
         "moviepy>=1.0.3",
