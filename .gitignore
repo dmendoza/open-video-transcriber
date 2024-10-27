@@ -49,3 +49,4 @@ htmlcov/
 
 # Documentation
 docs/_build/
+src/open_video_transcriber/resources/models
