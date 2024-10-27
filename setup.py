@@ -4,10 +4,10 @@ from pathlib import Path
 
 def get_model_files():
     """Get all model files to include in the package."""
-    model_dir = Path("src/whisper_transcriber/resources/models")
+    model_dir = Path("src/open_video_transcriber/resources/models")
     if model_dir.exists():
         return [
-            (str(model_dir.relative_to("src/whisper_transcriber")), 
+            (str(model_dir.relative_to("src/open_video_transcriber")), 
              [str(f) for f in model_dir.glob("*") if f.is_file()])
         ]
     return []

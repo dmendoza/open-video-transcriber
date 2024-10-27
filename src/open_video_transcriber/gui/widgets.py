@@ -2,17 +2,48 @@
 from PyQt5.QtWidgets import (
     QWidget, QPushButton, QVBoxLayout, QHBoxLayout, 
     QTextEdit, QComboBox, QLabel, QFileDialog, 
-    QProgressDialog, QMessageBox
+    QProgressDialog, QMessageBox, QDialog
 )
 from PyQt5.QtCore import Qt, pyqtSignal
 from ..config import Config
 from ..constants import VIDEO_FILTER
+from ..core.model_manager import ModelManager
+
+class ModelDownloadDialog(QDialog):
+    def __init__(self, model_name: str, model_size: int, parent=None):
+        super().__init__(parent)
+        self.model_name = model_name
+        self.model_size = model_size
+        self.init_ui()
+        
+    def init_ui(self):
+        layout = QVBoxLayout()
+        
+        # Add information labels
+        layout.addWidget(QLabel(f"Model: {self.model_name}"))
+        layout.addWidget(QLabel(f"Size: {self.model_size} MB"))
+        layout.addWidget(QLabel("This model needs to be downloaded for offline use."))
+        
+        # Add buttons
+        button_layout = QHBoxLayout()
+        download_btn = QPushButton("Download")
+        download_btn.clicked.connect(self.accept)
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.clicked.connect(self.reject)
+        
+        button_layout.addWidget(download_btn)
+        button_layout.addWidget(cancel_btn)
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
+        self.setWindowTitle("Download Required")
 
 class TranscriptionWidget(QWidget):
     transcribe_requested = pyqtSignal(str, str)  # video_path, model_name
     
     def __init__(self):
         super().__init__()
+        self.model_manager = ModelManager()
         self.init_ui()
         
     def init_ui(self):
@@ -22,11 +53,13 @@ class TranscriptionWidget(QWidget):
         
         # Create widgets
         self.model_combo = QComboBox()
-        self.model_combo.addItems(Config.AVAILABLE_MODELS)
-        self.model_combo.setCurrentText(Config.DEFAULT_MODEL)
+        self.update_model_combo()
         
         self.file_button = QPushButton("Open Video File")
         self.file_button.clicked.connect(self.open_file_dialog)
+        
+        self.download_button = QPushButton("Download Models")
+        self.download_button.clicked.connect(self.manage_models)
         
         self.text_output = QTextEdit()
         self.text_output.setReadOnly(True)
@@ -35,21 +68,59 @@ class TranscriptionWidget(QWidget):
         button_layout.addWidget(QLabel("Model:"))
         button_layout.addWidget(self.model_combo)
         button_layout.addWidget(self.file_button)
+        button_layout.addWidget(self.download_button)
         
         main_layout.addLayout(button_layout)
         main_layout.addWidget(self.text_output)
         
         self.setLayout(main_layout)
+    
+    def update_model_combo(self):
+        """Update the model combo box with downloaded models."""
+        self.model_combo.clear()
+        for model in Config.AVAILABLE_MODELS:
+            if self.model_manager.is_model_downloaded(model):
+                self.model_combo.addItem(f"{model} (downloaded)", model)
+            else:
+                self.model_combo.addItem(f"{model} (not downloaded)", model)
+    
+    def manage_models(self):
+        """Open dialog to manage model downloads."""
+        msg = "Downloaded Models:\n"
+        for model in self.model_manager.downloaded_models:
+            size = self.model_manager.get_model_size(model)
+            msg += f"- {model} ({size} MB)\n"
         
+        msg += "\nAvailable Space: "
+        msg += f"{self.model_manager.get_available_space()} MB"
+        
+        QMessageBox.information(self, "Model Management", msg)
+    
     def open_file_dialog(self):
         filename, _ = QFileDialog.getOpenFileName(
             self, "Open Video File", "", VIDEO_FILTER
         )
         if filename:
-            self.transcribe_requested.emit(filename, self.model_combo.currentText())
+            model_name = self.model_combo.currentData()
             
-    def set_text(self, text):
-        self.text_output.setText(text)
-        
-    def show_error(self, message):
-        QMessageBox.critical(self, "Error", message)
+            # Check if model is downloaded
+            if not self.model_manager.is_model_downloaded(model_name):
+                size = self.model_manager.get_model_size(model_name)
+                dialog = ModelDownloadDialog(model_name, size, self)
+                
+                if dialog.exec_() == QDialog.Accepted:
+                    progress = QProgressDialog("Downloading model...", "Cancel", 0, 0, self)
+                    progress.setWindowModality(Qt.WindowModal)
+                    progress.show()
+                    
+                    # Download model
+                    if self.model_manager.download_model(model_name):
+                        progress.close()
+                        self.update_model_combo()
+                        self.transcribe_requested.emit(filename, model_name)
+                    else:
+                        progress.close()
+                        QMessageBox.critical(self, "Error", "Failed to download model")
+            else:
+                self.transcribe_requested.emit(filename, model_name)
+                
