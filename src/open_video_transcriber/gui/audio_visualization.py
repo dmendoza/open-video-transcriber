@@ -57,6 +57,7 @@ class AudioVisualizationWidget(QWidget):
         
         # Setup media player
         self.media_player = QMediaPlayer()
+        self.media_player.notifyInterval = 500  # Notify every 500 ms
         self.media_player.positionChanged.connect(self.update_position)
         
         # Setup timer for updating position
@@ -98,9 +99,9 @@ class AudioVisualizationWidget(QWidget):
                     self.segment_lines.append(line)
                     
                     # Add text labels
-                    self.ax.text(segment['start'], self.ax.get_ylim()[1], 
-                               segment['text'][:20] + '...' if len(segment['text']) > 20 else segment['text'],
-                               rotation=45, verticalalignment='bottom', fontsize=8)
+                    # self.ax.text(segment['start'], self.ax.get_ylim()[1], 
+                            #    segment['text'][:20] + '...' if len(segment['text']) > 20 else segment['text'],
+                            #    rotation=45, verticalalignment='bottom', fontsize=8)
                 
                 # Initialize the highlight patch
                 if self.current_segment_highlight is None:
@@ -137,26 +138,27 @@ class AudioVisualizationWidget(QWidget):
                 return segment
         return None
 
-    def slider_seek(self, value):
+    def slider_seek(self, slider_seek_value):
         """Handle seeking in the audio file when user use the slider."""
-        logger.info(f"seek > value: {value}")
+        logger.info(f"seek > value: {slider_seek_value}")
         if self.audio_data is not None:
             duration = len(self.audio_data) / self.sample_rate
-            slider_seek_position = (value / 100.0) * duration
-            logger.info(f"seek > slider_seek_position: {slider_seek_position}")
+            current_time = (slider_seek_value / 100.0) * duration
+            slider_seek_position = current_time * 1000  # Convert to milliseconds
+            # logger.info(f"seek > slider_seek_position: {slider_seek_position}")
             self.media_player.setPosition(int(slider_seek_position))  # Convert to milliseconds
-            self.seek_position.emit(slider_seek_position)
+            # self.seek_position.emit(slider_seek_position)
 
-    def update_position(self, position):
+    def update_position(self, media_player_position):
         """Update the current position during playback."""
-        logger.info(f"update_position > Position: {position}")
-        self.current_time = position / 1000.0  # Convert from milliseconds to seconds
+        # logger.info(f"update_position > media_player_position: {media_player_position}")
+        self.current_time = media_player_position / 1000.0  # Convert from milliseconds to seconds
         if self.audio_data is not None:
             duration = len(self.audio_data) / self.sample_rate
-            value = int((self.current_time / duration) * 100)
+            slider_seek_value = int((self.current_time / duration) * 100)
             self.playback_updated_position.emit(self.current_time) # Convert to milliseconds
             self.slider.blockSignals(True)
-            self.slider.setValue(value)
+            self.slider.setValue(slider_seek_value)
             self.slider.blockSignals(False)
 
     def toggle_play(self):
@@ -172,6 +174,7 @@ class AudioVisualizationWidget(QWidget):
 
     def cleanup(self):
         """Clean up resources when widget is closed."""
+        logger.info("Cleaning up audio visualization widget")
         self.timer.stop()
         self.media_player.stop()
         self.media_player.deleteLater()

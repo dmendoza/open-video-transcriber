@@ -12,7 +12,7 @@ class Config:
     
     # Whisper configuration
     DEFAULT_MODEL = "base"
-    AVAILABLE_MODELS = ["tiny", "base", "small", "medium", "large"]
+    AVAILABLE_MODELS = ["tiny", "base", "small", "medium", "large", "turbo"]
     
     # Model file sizes in MB (approximate)
     MODEL_SIZES: Dict[str, int] = {
@@ -20,7 +20,8 @@ class Config:
         "base": 300,
         "small": 500,
         "medium": 1500,
-        "large": 3000
+        "large": 3000,
+        "turbo": 3000
     }
     
     # GUI configuration

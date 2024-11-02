@@ -158,7 +158,7 @@ class TranscriptionWidget(QWidget):
         self.audio_path = audio_path
     
     def highlight_text(self, position):
-        logger.info(f"highlight_text > position: {position}")
+        # logger.info(f"highlight_text > position: {position}")
         if not self.transcription:
             return
         
@@ -170,9 +170,14 @@ class TranscriptionWidget(QWidget):
         highlight_format.setBackground(QColor(255, 255, 0, 100))  # Light yellow
         
         for segment in self.transcription['segments']:
+            # logger.info(f"highlight_text > segment: {segment}")
             if segment['start'] <= position < segment['end']:
-                start_pos = self.text_output.document().find(segment['text']).position()
-                cursor.setPosition(start_pos)
-                cursor.setPosition(start_pos + len(segment['text']), QTextCursor.KeepAnchor)
+                segment_text = segment['text']
+                start_pos = self.text_output.document().find(segment_text).position()
+                # logger.info(f"highlight_text > segment_text: {segment_text}")
+                # logger.info(f"highlight_text > start_pos: {start_pos}")
+                # logger.info(f"highlight_text > len(segment_text): {len(segment_text)}")
+                cursor.setPosition(start_pos - len(segment_text))
+                cursor.setPosition(start_pos, QTextCursor.KeepAnchor)
                 cursor.setCharFormat(highlight_format)
                 break
