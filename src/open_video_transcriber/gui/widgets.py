@@ -11,6 +11,9 @@ from ..constants import VIDEO_FILTER
 from ..core.model_manager import ModelManager
 from .audio_visualization import AudioVisualizationWidget
 
+from ..utils.logger import get_logger
+logger = get_logger(__name__)
+
 class ModelDownloadDialog(QDialog):
     def __init__(self, model_name: str, model_size: int, parent=None):
         super().__init__(parent)
@@ -74,6 +77,8 @@ class TranscriptionWidget(QWidget):
         
         self.audio_viz = AudioVisualizationWidget()
         self.audio_viz.seek_position.connect(self.highlight_text)
+        self.audio_viz.playback_updated_position.connect(self.highlight_text)
+        
         splitter.addWidget(self.audio_viz)
         
         # Add widgets to layouts
@@ -153,6 +158,7 @@ class TranscriptionWidget(QWidget):
         self.audio_path = audio_path
     
     def highlight_text(self, position):
+        logger.info(f"highlight_text > position: {position}")
         if not self.transcription:
             return
         
