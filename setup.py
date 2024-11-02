@@ -25,6 +25,8 @@ setup(
         "PyQt5>=5.15.0",
         "torch>=2.0.0",
         "numpy>=1.20.0",
+        "matplotlib>=3.9.2",
+        "librosa>=0.10.2",
     ],
     extras_require={
         "dev": [

@@ -12,28 +12,30 @@ from ..constants import MSG_TRANSCRIBING, MSG_ERROR
 logger = get_logger(__name__)
 
 class TranscriptionThread(QThread):
-    finished = pyqtSignal(str)
+    finished = pyqtSignal(dict)
     error = pyqtSignal(str)
     
     def __init__(self, video_path: str, model_name: str):
         super().__init__()
         self.video_path = Path(video_path)
         self.model_name = model_name
+        self.audio_path = None  # Initialize audio_path attribute
         
     def run(self):
         try:
             # Extract audio
             audio_extractor = AudioExtractor()
-            audio_path = audio_extractor.extract_audio(self.video_path)
+            self.audio_path = audio_extractor.extract_audio(self.video_path)
             
             # Transcribe
             transcriber = Transcriber(self.model_name)
-            result = transcriber.transcribe(audio_path)
+            result = transcriber.transcribe(self.audio_path)
+            logger.info(f"Transcription result: {result}")
             
             # Clean up
-            audio_path.unlink()
-            
-            self.finished.emit(result["text"])
+            # self.audio_path.unlink()
+            # self.finished.emit(result["text"])
+            self.finished.emit(result)
         except Exception as e:
             logger.error(f"Error in transcription thread: {e}")
             self.error.emit(str(e))
@@ -53,6 +55,10 @@ class MainWindow(QMainWindow):
         
     def start_transcription(self, video_path: str, model_name: str):
         self.thread = TranscriptionThread(video_path, model_name)
-        self.thread.finished.connect(self.transcription_widget.set_text)
+        self.thread.finished.connect(self.on_transcription_finished)
         self.thread.error.connect(self.transcription_widget.show_error)
         self.thread.start()
+        
+    def on_transcription_finished(self, result):
+        self.transcription_widget.set_audio_path(self.thread.audio_path)
+        self.transcription_widget.set_transcription(result)
