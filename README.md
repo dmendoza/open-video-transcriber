@@ -1,6 +1,6 @@
 # Open Video Transcriber
 
-A desktop application for transcribing video files using OpenAI's Whisper model.
+A proof-of-concept desktop application that validates offline video transcription capabilities using OpenAI's Whisper models.
 
 ## Development Setup
 
@@ -13,7 +13,7 @@ A desktop application for transcribing video files using OpenAI's Whisper model.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/open-video-transcriber
+git clone https://github.com/dmendoza/open-video-transcriber
 cd open-video-transcriber
 ```
 
@@ -150,4 +150,20 @@ open_video_transcriber/
 
 ## License
 
-[MIT License](LICENSE)
+This project is licensed under the GPL v3 License due to the inclusion of PyQt5. See the [LICENSE](LICENSE) file for details.
+
+## Dependencies and Licenses
+
+- **openai-whisper**: MIT License
+- **moviepy**: MIT License
+- **PyQt5**: GPL v3 License
+- **torch**: BSD License
+- **numpy**: BSD License
+- **matplotlib**: PSF License
+- **librosa**: ISC License
+- **pytest**: MIT License
+- **black**: MIT License
+- **flake8**: MIT License
+- **py2app**: MIT License
+
+Please review the individual licenses of these dependencies for more information.

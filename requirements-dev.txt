@@ -9,20 +9,32 @@ altgraph==0.17.4
     #   macholib
     #   modulegraph
     #   py2app
+audioread==3.0.1
+    # via librosa
 black==24.10.0
     # via open_video_transcriber (setup.py)
 certifi==2024.8.30
     # via requests
+cffi==1.17.1
+    # via soundfile
 charset-normalizer==3.4.0
     # via requests
 click==8.1.7
     # via black
+contourpy==1.3.0
+    # via matplotlib
+cycler==0.12.1
+    # via matplotlib
 decorator==4.4.2
-    # via moviepy
+    # via
+    #   librosa
+    #   moviepy
 filelock==3.16.1
     # via torch
 flake8==7.1.1
     # via open_video_transcriber (setup.py)
+fonttools==4.54.1
+    # via matplotlib
 fsspec==2024.10.0
     # via torch
 idna==3.10
@@ -35,12 +47,24 @@ iniconfig==2.0.0
     # via pytest
 jinja2==3.1.4
     # via torch
+joblib==1.4.2
+    # via
+    #   librosa
+    #   scikit-learn
+kiwisolver==1.4.7
+    # via matplotlib
+lazy-loader==0.4
+    # via librosa
+librosa==0.10.2.post1
+    # via open_video_transcriber (setup.py)
 llvmlite==0.43.0
     # via numba
 macholib==1.16.3
     # via py2app
 markupsafe==3.0.2
     # via jinja2
+matplotlib==3.9.2
+    # via open_video_transcriber (setup.py)
 mccabe==0.7.0
     # via flake8
 modulegraph==0.19.6
@@ -51,42 +75,65 @@ moviepy==1.0.3
     # via open_video_transcriber (setup.py)
 mpmath==1.3.0
     # via sympy
+msgpack==1.1.0
+    # via librosa
 mypy-extensions==1.0.0
     # via black
 networkx==3.4.2
     # via torch
 numba==0.60.0
-    # via openai-whisper
+    # via
+    #   librosa
+    #   openai-whisper
 numpy==2.0.2
     # via
+    #   contourpy
     #   imageio
+    #   librosa
+    #   matplotlib
     #   moviepy
     #   numba
     #   open_video_transcriber (setup.py)
     #   openai-whisper
+    #   scikit-learn
+    #   scipy
+    #   soxr
 openai-whisper==20240930
     # via open_video_transcriber (setup.py)
 packaging==24.1
     # via
     #   black
+    #   lazy-loader
+    #   matplotlib
+    #   pooch
     #   py2app
     #   pytest
 pathspec==0.12.1
     # via black
 pillow==11.0.0
-    # via imageio
+    # via
+    #   imageio
+    #   matplotlib
 platformdirs==4.3.6
-    # via black
+    # via
+    #   black
+    #   pooch
 pluggy==1.5.0
     # via pytest
+pooch==1.8.2
+    # via librosa
 proglog==0.1.10
     # via moviepy
 py2app==0.28.8
     # via open_video_transcriber (setup.py)
 pycodestyle==2.12.1
     # via flake8
+pycparser==2.22
+    # via cffi
 pyflakes==3.2.0
     # via flake8
+pyparsing==3.2.0
+    # via matplotlib
 pyqt5==5.15.11
     # via open_video_transcriber (setup.py)
 pyqt5-qt5==5.15.15
@@ -95,14 +142,31 @@ pyqt5-sip==12.15.0
     # via pyqt5
 pytest==8.3.3
     # via open_video_transcriber (setup.py)
+python-dateutil==2.9.0.post0
+    # via matplotlib
 regex==2024.9.11
     # via tiktoken
 requests==2.32.3
     # via
     #   moviepy
+    #   pooch
     #   tiktoken
+scikit-learn==1.5.2
+    # via librosa
+scipy==1.14.1
+    # via
+    #   librosa
+    #   scikit-learn
+six==1.16.0
+    # via python-dateutil
+soundfile==0.12.1
+    # via librosa
+soxr==0.5.0.post1
+    # via librosa
 sympy==1.13.3
     # via torch
+threadpoolctl==3.5.0
+    # via scikit-learn
 tiktoken==0.8.0
     # via openai-whisper
 torch==2.2.2
@@ -115,7 +179,9 @@ tqdm==4.66.5
     #   openai-whisper
     #   proglog
 typing-extensions==4.12.2
-    # via torch
+    # via
+    #   librosa
+    #   torch
 urllib3==2.2.3
     # via requests
 
