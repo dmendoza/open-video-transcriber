@@ -90,6 +90,7 @@ open_video_transcriber/
 ├── README.md
 ├── requirements.txt
 ├── setup.py
+├── setup_dev_env.py
 ├── src/
 │   └── open_video_transcriber/
 │       ├── __init__.py
@@ -102,7 +103,8 @@ open_video_transcriber/
 │       ├── gui/
 │       │   ├── __init__.py
 │       │   ├── app.py
-│       │   └── widgets.py
+│       │   ├── widgets.py
+│       │   └── audio_visualization.py
 │       ├── utils/
 │       │   ├── __init__.py
 │       │   └── logger.py
