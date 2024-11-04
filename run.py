@@ -3,7 +3,6 @@
 Entry point script for the Open Video Transcriber application.
 This script should be placed in the root directory of the project.
 """
-
 import sys
 from pathlib import Path
 

@@ -1,9 +1,27 @@
+"""
+Setup script for the open_video_transcriber package.
+
+This script uses setuptools to package the open_video_transcriber application, 
+which is a desktop application for transcribing video files using OpenAI's Whisper.
+"""
 from setuptools import setup, find_packages
 import os
 from pathlib import Path
 
 def get_model_files():
-    """Get all model files to include in the package."""
+    """
+    Retrieves the model files from the specified directory.
+
+    This function checks if the directory 'src/open_video_transcriber/resources/models' exists.
+    If it does, it returns a list containing a tuple. The tuple consists of the relative path 
+    to the model directory and a list of all files within that directory.
+
+    Returns:
+        list: A list containing a single tuple. The tuple contains:
+            - str: The relative path to the model directory.
+            - list: A list of strings representing the file paths of all files in the model directory.
+        If the directory does not exist, an empty list is returned.
+    """
     model_dir = Path("src/open_video_transcriber/resources/models")
     if model_dir.exists():
         return [

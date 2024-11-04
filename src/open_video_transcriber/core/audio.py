@@ -1,4 +1,9 @@
-# src/open_video_transcriber/core/audio.py
+"""
+This module provides functionality to extract audio from video files.
+
+Classes:
+    AudioExtractor: A class with a static method to extract audio from a video file.
+"""
 from moviepy.editor import VideoFileClip
 from pathlib import Path
 from ..utils.logger import get_logger
@@ -10,14 +15,17 @@ class AudioExtractor:
     @staticmethod
     def extract_audio(video_path: Path, output_path: Path = None) -> Path:
         """
-        Extract audio from a video file.
-        
+        Extracts the audio from a given video file and saves it as a .wav file.
+
         Args:
-            video_path (Path): Path to the video file
-            output_path (Path, optional): Path for the output audio file
-            
+            video_path (Path): The path to the video file from which to extract audio.
+            output_path (Path, optional): The path where the extracted audio file will be saved. 
+                                          If not provided, the audio will be saved in the TEMP_DIR 
+                                          with the same name as the video file but with a .wav extension.
         Returns:
-            Path: Path to the extracted audio file
+            Path: The path to the extracted audio file.
+        Raises:
+            Exception: If there is an error during the audio extraction process.
         """
         try:
             if output_path is None:

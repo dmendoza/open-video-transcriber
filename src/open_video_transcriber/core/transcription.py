@@ -1,4 +1,10 @@
-# src/open_video_transcriber/core/transcription.py
+
+"""
+This module provides the Transcriber class for transcribing audio files using the Whisper model.
+
+Classes:
+    Transcriber: A class to handle the transcription of audio files using a specified Whisper model.
+"""
 import whisper
 import torch
 from pathlib import Path
@@ -12,10 +18,15 @@ logger = get_logger(__name__)
 class Transcriber:
     def __init__(self, model_name: str = Config.DEFAULT_MODEL):
         """
-        Initialize the transcriber with a specific model.
-        
+        Initializes the Transcription class with a specified model name.
+
         Args:
-            model_name (str): Name of the Whisper model to use
+            model_name (str): The name of the model to be used for transcription. Defaults to Config.DEFAULT_MODEL.
+
+        Attributes:
+            model_name (str): The name of the model to be used for transcription.
+            model (Optional[whisper.Whisper]): The Whisper model instance, initialized as None.
+            model_manager (ModelManager): An instance of the ModelManager class to manage model-related operations.
         """
         self.model_name = model_name
         self.model: Optional[whisper.Whisper] = None
@@ -23,17 +34,32 @@ class Transcriber:
     
     def ensure_model(self) -> bool:
         """
-        Ensure the model is downloaded and available.
-        
+        Ensures that the required model is downloaded.
+
+        This method checks if the model specified by `self.model_name` is already
+        downloaded using the `is_model_downloaded` method of `self.model_manager`.
+        If the model is not downloaded, it attempts to download the model using
+        the `download_model` method of `self.model_manager`.
+
         Returns:
-            bool: True if model is ready, False otherwise
+            bool: True if the model is already downloaded or successfully downloaded,
+                  False otherwise.
         """
         if not self.model_manager.is_model_downloaded(self.model_name):
             return self.model_manager.download_model(self.model_name)
         return True
     
     def load_model(self):
-        """Load the Whisper model if not already loaded."""
+        """
+        Loads the Whisper model if it is not already loaded.
+        This method checks if the model is already loaded. If not, it ensures the model is available
+        by calling `ensure_model()`. If the model cannot be ensured, it raises a RuntimeError.
+        Once the model is ensured, it loads the Whisper model using the model name and updates
+        the `self.model` attribute.
+
+        Raises:
+            RuntimeError: If the model cannot be ensured.
+        """
         if self.model is None:
             if not self.ensure_model():
                 raise RuntimeError(f"Failed to ensure model {self.model_name}")
@@ -44,13 +70,16 @@ class Transcriber:
     
     def transcribe(self, audio_path: Path) -> Dict[str, Any]:
         """
-        Transcribe an audio file.
-        
+        Transcribes the given audio file using the loaded model.
+
         Args:
-            audio_path (Path): Path to the audio file
-            
+            audio_path (Path): The path to the audio file to be transcribed.
+
         Returns:
-            Dict[str, Any]: Transcription results
+            Dict[str, Any]: The transcription result.
+
+        Raises:
+            Exception: If an error occurs during transcription.
         """
         try:
             self.load_model()
